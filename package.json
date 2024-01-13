@@ -19,6 +19,9 @@
   },
   "homepage": "https://github.com/TechUX/notes-app#readme",
   "dependencies": {
-    "express": "^4.18.2"
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.4",
+    "router": "^1.3.8"
   }
 }
