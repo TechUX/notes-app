@@ -82,9 +82,18 @@ app.put('/update/:id',async (req,res)=> {
         res.status(200).json({status:"ok", message:result})
     }
     catch(e){
-        response.status(500).json({status:"error", message:e}) ;
+        res.status(500).json({status:"error", message:e}) ;
     }
 })
 
+// delete a note
+app.delete("/delete/:id", async (req,resp) => {
+    if(!req.params.id){
+        return resp.status(400).json({status:"error", message:"ID not passed"}) ;
+    }
 
+    let result = await notes.deleteOne({"_id":req.params.id}) ;
+    resp.status(200).json({status:"ok",message:result}) ;
+
+})
 module.exports = app ;
