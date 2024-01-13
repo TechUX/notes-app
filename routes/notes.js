@@ -28,7 +28,7 @@ app.get('/:by',async (req,res)=>{
         }
     } catch(error){
         console.log(error);
-        res.status(500).json({status:"error", msg:"Pass correct value with ID"}) ;
+        res.status(500).json({status:"error", message:"Pass correct value with ID"}) ;
     }
     
     
@@ -42,12 +42,11 @@ app.get('/:by',async (req,res)=>{
 }) ;
 
 // create a new note
-
 app.post("/add", async (req,res)=>{
     let note = req.body
 
     if(!note){
-        return res.status(400).json({status:"error", msg:"Missing notes content"}) ;
+        return res.status(400).json({status:"error", message:"Missing notes content"}) ;
     }
     note.createdAt = Date.now();
     note.updatedAt = Date.now();
@@ -56,11 +55,36 @@ app.post("/add", async (req,res)=>{
 
     try {
         const result = await newNote.save() ;
-        res.status(201).json({status:'ok',msg:result}) ;
+        res.status(201).json({status:'ok',message:result}) ;
     }
     catch(e){
-        res.status(400).json({status:'error',msg: e}) ;
+        res.status(400).json({status:'error',message: e}) ;
     }
 })
+
+// update a note
+app.put('/update/:id',async (req,res)=> {
+    if (!req.params.id){
+        return res.status(400).json({ status : "error" , message :"ID not passed"}) ;
+    }
+
+    if (!req.body){
+        return res.status(400).json({status:"error", message:"updated content not passed"}) ;
+    }
+    req.body.updatedAt = Date.now() ;
+    try {
+        let result = await notes.updateOne(
+            {"_id":req.params.id},
+            {
+                $set:req.body
+            }
+        )
+        res.status(200).json({status:"ok", message:result})
+    }
+    catch(e){
+        response.status(500).json({status:"error", message:e}) ;
+    }
+})
+
 
 module.exports = app ;
