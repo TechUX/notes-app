@@ -3,10 +3,12 @@ const notes = require("../schema/notes")
 
 const app = express.Router() ;
 
+app.use(express.json());
+
 // list all notes
 app.get("/", async (_,res) => {
     let data = await notes.find({});
-    res.status(200).send(data) ;
+    res.status(200).json({status:"ok",note:data}) ;
 }) ;
 
 // list notes by id or title
@@ -19,14 +21,14 @@ app.get('/:by',async (req,res)=>{
     try {
         if (req.params.by == "id"){
             let data = await notes.find({_id:value});
-            return res.status(200).send(data) ;
+            return res.status(200).json({status:"ok",note:data}) ;
         } else {
             let data = await notes.find({title:{ $regex: value, $options: 'i' }}) ;
-            return res.status(200).json({status:"ok",data:data}) ;
+            res.status(200).json({status:"ok",note:data}) ;
         }
     } catch(error){
         console.log(error);
-        return res.status(500).json({status:"error", msg:"Pass correct value with ID"}) ;
+        res.status(500).json({status:"error", msg:"Pass correct value with ID"}) ;
     }
     
     
@@ -39,5 +41,26 @@ app.get('/:by',async (req,res)=>{
     // res.send(data) ;
 }) ;
 
+// create a new note
+
+app.post("/add", async (req,res)=>{
+    let note = req.body
+
+    if(!note){
+        return res.status(400).json({status:"error", msg:"Missing notes content"}) ;
+    }
+    note.createdAt = Date.now();
+    note.updatedAt = Date.now();
+
+    let newNote = new notes(note) ;
+
+    try {
+        const result = await newNote.save() ;
+        res.status(201).json({status:'ok',msg:result}) ;
+    }
+    catch(e){
+        res.status(400).json({status:'error',msg: e}) ;
+    }
+})
 
 module.exports = app ;
