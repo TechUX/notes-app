@@ -1,17 +1,26 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config()
 
 require("./config/dbConfig");
 const notes = require("./routes/notes")
 
-const PORT = process.env.PORT || 8080 ;
+const PORT = process.env.PORT || 9876 ;
 
 const app = express() ;
 
+var cors_domains = process.env.cors_domains ;
+
 var corsOptions = {
-    origin: 'http://127.0.0.1:8080',
-    optionsSuccessStatus: 200
+  origin: function (origin, callback) {
+    if (cors_domains.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
 }
+
 
 app.use(cors(corsOptions))
 
